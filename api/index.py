@@ -11,7 +11,7 @@ def index():
 def get_res(q:str):
     with DDGS() as ddgs:
         search_got = list(ddgs.text(q,max_results=5))
-        links = [item["href"] for item in search_got]
+        link = [item["href"] for item in search_got]
     return{"query": q,
            "result": search_got
            
