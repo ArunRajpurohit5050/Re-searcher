@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-JINA_API_KEY = "jina_a994b38df40446c2bdc50ad2e9324700WzPjY0FvswoFLFJyy9_khd81BENj"
+JINA_API_KEY = "key"
 
 @app.get("/")
 def index():
