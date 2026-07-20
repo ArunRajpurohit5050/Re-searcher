@@ -1,10 +1,13 @@
 import requests
 from ddgs import DDGS
 from fastapi import FastAPI
+from google import genai
+from google.genai import types
 
 app = FastAPI()
 
-JINA_API_KEY = "key"
+client = genai.Client(api_key="key")
+
 
 @app.get("/")
 def index():
@@ -19,18 +22,15 @@ def get_res(q:str):
            }
 
 @app.get("/search")
-def jina_search(link:str):
-    url = f"https://s.jina.ai/{link}"
+def gemini_search(q:str):
+    response = client.models.generate_content(
+        model = "gemini-3.5-flash",
+        contents= q,
+        config= types.GenerateContentConfig(
+            system_instruction="use the user promt and search for top 5 websites about it",
+            max_output_tokens= 100,
+            temperature = 0.5,
+        )
 
-    headers = {
-        "Authorization" : f"Bearer {JINA_API_KEY}",
-        "accept": "application/json"
-    }
-
-    response = requests.get(url,headers=headers)
-    data = response.json()
-
-    return{
-        "query": link,
-        "resp" : data
-    }
+    )
+    return response.text
