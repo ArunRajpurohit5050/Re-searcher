@@ -1,12 +1,14 @@
 import requests
 from ddgs import DDGS
 from fastapi import FastAPI
-from google import genai
-from google.genai import types
+from openai import OpenAI
 
 app = FastAPI()
 
-client = genai.Client(api_key="key")
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key= "key"
+)
 
 
 @app.get("/")
@@ -22,15 +24,22 @@ def get_res(q:str):
            }
 
 @app.get("/search")
-def gemini_search(q:str):
-    response = client.models.generate_content(
-        model = "gemini-3.5-flash",
-        contents= q,
-        config= types.GenerateContentConfig(
-            system_instruction="use the user promt and search for top 5 websites about it",
-            max_output_tokens= 100,
-            temperature = 0.5,
-        )
+def open_search(q:str):
+    selected_model = "~openai/gpt-latest"
 
+    response = client.chat.completions.create(
+        model= selected_model,
+        messages=[
+            {
+                "role" : "system",
+                "content": "provide a consise response under 100 tokens"
+            },
+            {
+                "role": "user",
+                "content": q
+            }
+        ],
+        max_tokens=100,
+        temperature=0.5
     )
-    return response.text
+    return{"response": response.choices[0].message.content}
