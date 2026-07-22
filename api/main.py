@@ -4,15 +4,27 @@ from ddgs import DDGS
 from fastapi import FastAPI
 from openai import OpenAI
 from tavily import TavilyClient
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI()
 
-client = OpenAI(
-    base_url="https://api.groq.com/openai/v1",
-    api_key= "key"
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
-tavily_client = TavilyClient(api_key="key")
+client = OpenAI(
+    base_url="https://api.groq.com/openai/v1",
+    api_key= "ai_key"
+)
+
+tavily_client = TavilyClient(api_key="tavily_key")
 
 
 @app.get("/")
@@ -110,29 +122,49 @@ def opt_search(criteria:str):
     final_prompt = prcess.get("optimized_query",criteria)
 
     if result == "1":
+        engine_used = "duckduckgo"
         with DDGS() as ddgs:
             respond = list(ddgs.text(final_prompt,max_results=5))
-            s = [item["body"] for item in respond]
+            search_result = [item["body"] for item in respond]
 
-        return{"got":"ddgs",
-               "ai": result,
-               "promt": final_prompt,
-                "ai": result,
-                "got": s
-               }
+        
     elif result == "2":
+        engine_used = "tavily"
         tavily_resp = tavily_client.search(query=final_prompt, max_results=5)
-        final_tav = [item["content"] for item in tavily_resp["results"]]
-        return{"got":"tavily",
-               "ai": result,
-               "promt": final_prompt,
-                "api": result,
-                "got": final_tav
-               }
+        search_result = [item["content"] for item in tavily_resp["results"]]
+        
     else:
-        return{"got":"did not work",
-               "ai": result,
-               "promt": final_prompt,
-                "api": result
-               }
+        print("error")
+    final_result = "\n---\n".join(search_result)
+    final_ai = client.chat.completions.create(
+        model= selecte_model,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a helpful research assistant. Your task is to look at the provided search data, "
+                    "make sense of it, eliminate duplicates, resolve contradictions logically, and deliver a "
+                    "single, cohesive, well-structured answer to the user's original query."
+                )
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"original user request:{criteria}\n"
+                    f"search prompt used:{final_prompt}\n"
+                    f"search engine used:{engine_used}\n"
+                    f"raw search context:{final_result}\n"
+                    f"please provide your final response now:"
+                )
+            }
+        ],
+        temperature=0.3
+    )
+    final_answer = final_ai.choices[0].message.content.strip()
 
+    return{
+        "engine used": engine_used,
+        "prompt": final_prompt,
+        "search result":search_result,
+        "agent response": final_answer
+    }
