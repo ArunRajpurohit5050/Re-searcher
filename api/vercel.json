@@ -1,22 +1,18 @@
 {
   "builds": [
     {
-      "src": "main.py",
+      "src": "api/main.py",
       "use": "@vercel/python"
     },
     {
-      "src": "dash.html",
+      "src": "*.html",
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(choose|logs|get|search|config)", 
-      "dest": "/main.py"
-    },
-    {
-      "src": "/",
-      "dest": "/dash.html"
+      "source": "/api/(.*)",
+      "destination": "/api/main.py"
     }
   ]
 }
