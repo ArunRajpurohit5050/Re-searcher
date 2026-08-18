@@ -7,7 +7,7 @@ wikipedia
 internetarchive
 yfinance
 yt-dlp
-duckduckgo-search
+ddgs
 openai
 tavily-python
 firecrawl-py
