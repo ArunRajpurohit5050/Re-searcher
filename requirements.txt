@@ -6,11 +6,9 @@ arxiv
 wikipedia
 internetarchive
 yfinance
-yt-dlp
 ddgs
 openai
 tavily-python
 firecrawl-py
 pymed
-youtube-transcript-api
 PyGithub
