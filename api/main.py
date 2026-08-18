@@ -4,8 +4,6 @@ import arxiv
 import wikipedia
 import internetarchive
 import yfinance as yf
-import yt_dlp
-import time
 from ddgs import DDGS
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -16,10 +14,7 @@ from dotenv import load_dotenv
 from supabase import create_client, Client
 from firecrawl import FirecrawlApp, V1ScrapeOptions
 from pymed import PubMed
-from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api.formatters import TextFormatter
 from github import Github, Auth
-from yt_dlp.networking.impersonate import ImpersonateTarget
 
 
 # load main app ---
@@ -81,15 +76,6 @@ wikipedia.set_user_agent("RE-search/v1 (larry.reddit.reads@gmail.com)")
 
 pubmed = PubMed(tool="RE-search", email="larry.reddit.reads@gmail.com")
 
-yt = YouTubeTranscriptApi()
-
-ydl = yt_dlp.YoutubeDL({
-     "quiet": True, 
-     "skip_download": True,
-     "extract_flat": True,
-     "force_ipv4": True,
-     "impersonate": ImpersonateTarget(client="chrome")
-     })
 github_key = os.environ.get("git_key")
 auth = Auth.Token(github_key)
 
@@ -105,30 +91,6 @@ def get_logs(user = Depends(verify_supa)):
         user_id = user.get("claims", {}).get("sub") or user.get("id") or user.get("sub") or user.get("user")
     response = supabase.table("search_logs").select("*").eq("user_id",user_id).order("created_at",desc=True).execute()
     return {"logs": response.data}
-@app.get("/get")
-def get_res(q:str):
-    print("gt searching")
-    all_vid=[]
-    search = ydl.extract_info(f"ytsearch5:{q}", download=False)
-    an = [video["id"] for video in search.get("entries",[])if "id" in video]
-    time.sleep(2)
-    ands = [video["title"] for video in search.get("entries",[])if "title" in video]
-    print(ands)
-    time.sleep(2)
-    try:
-        for url in an:    
-            fe = yt.fetch(url)
-            print("next vid")
-            print(url)
-            print(fe)
-            print("\n")
-            time.sleep(5)
-    except Exception as e :
-         print("issue",e)
-
-    return{"query": q,
-               "response": fe
-               }
 
 @app.get("/config")
 def get_key():
