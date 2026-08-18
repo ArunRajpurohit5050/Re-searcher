@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Dashboard</title>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+        <script src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+        
+        <script>
+            tailwind.config = {
+                darkmode: "class",
+                theme:{
+                    extend:{
+                        colors:{
+                            background: "#0b1326",
+                            surface: "#131b2e",
+                            border: "#3b494c",
+                            primary: "#c3f5ff",
+                            primary_dark: "#00daf3",
+                            text_main: "#dae2fd",
+                            text_dim: "#bac9cc", 
+                    },
+                    fontFamily:{
+                        sans: ["Inter", "sans-serif"],
+                        mono: ["JetBrains Mono", "monospace"]
+                    }
+                },
+            },
+        }
+        </script>
+    </head>
+    <body class="flex h-screen overflow-hidden bg-background text-text_main font-sans">
+        <aside class="w-64 bg-[#060e20] border-r border-border flex flex-col justify-between shrink-0">
+            <div class="flex flex-col min-h-0">
+                <div class="h-16 flex items-center gap-3 px-6 border-b border-border/50">
+                    <div class="w-8 h-8 bg-primary_dark rounded-full flex items-center justify-center text-background">
+                        <span class="material-symbols-outlined text-lg">dashboard</span>
+                    </div>
+                    <h1 class="font-bold text-lg  tracking-tight text-primary">RE-search</h1>
+                </div>
+
+                <nav class="p-4 space-y-1">
+                    <button class="w-full flex items-center gap-3 px-4 py-3 bg-surface text-primary rounded-md border-l-2 border-primary">
+                        <span class="material-symbols-outlined text-[20px]">search</span>
+                        <span class="text-sm font-medium">RE-search</span>
+                    </button>
+                </nav>
+                </div>
+                <div class="flex-1 flex flex-col min-h-0 border-t border-border/30 mt-2">
+                    <div class="px-6 pt-4 pb-2 flex items-center justify-between text-xs font-mono text-text_dim uppercase tracking-wider shrink-0">
+                        <span>Recent searches</span>
+                        <span class="material-symbols-outlined text-sm animate-pulse text-primary_dark">history</span>
+                    </div>
+                    <div id="historyList" class="flex-1 overflow-y-auto px-4 pb-4 space-y-1 custom-scrollbar text-xs font-mono text-gray-400">
+                        <p class="text-center py-4 text-gray-600 italic">No search history</p>
+                    </div>
+                </div> 
+            
+
+            <div class="p-4 border-t border-border/50 bg-[#081023]">
+                <div class="mb-4 px-2">
+                    <p class="text-xs font-mono text.text_dim uppercase tracking-wider">logged in as:</p>
+                    <p id="userEmail" class="text-xs font-semibold truncate text-white">loading...</p>
+                </div>
+
+                <button id="logoutbtn" class="w-full flex items-center justify-center gap-2 border-red-900/50 text-red-400 hover:bg-red-950/30 py-2 rounded text-xs uppercase font-mono  tracking-widest transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">logout</span>
+                    Disconnect
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col relative">
+            <header class="h-16 border-b border-border flex items-center justify-between px-8 bg-background/50 backdrop-blur-md sticky top-0 z-10">
+                <div class="flex items-center gap-2 text-xs font-mono text-primary_dark">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    System online
+                </div>
+                <div class="text-xs font-mono text-text_dim">model: <span class="text-primary">RE-search.Orch.v1</span></div>
+                <select id="modelSelector" class="bg-surface border border-border text-xs font-mono text-primary rounded px-3 py-1 focus:ring-primary outline-none cursor-pointer hover:border-primary transition-colors">
+                    <option value="norm">Norm</option>
+                    <option value="max">Max</option>
+                </select>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-8 lg:p-12">
+                <div class="max-w-3xl mx-auto mb-10">
+                    <h2 class="text-2xl font-semibold mb-6 text-center text-white">Deep research</h2>
+                    <form id="queryForm" class="relative group">
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-text_dim group-focus-within:text-primary transition-colors">search</span>
+                        </div>
+                        <input
+                            type="text"
+                            id="queryInput"
+                            required
+                            class="w-full bg-surface border border-border text-white text-sm rounded-lg focus:ring-2 focus:ring-primary_dark focus:border-transparent block w-full pl-12 p-4 shadow-lg transition-all placeholder-gray-500 font-mono"
+                            placeholder="Enter you query"
+                            >
+                        <button
+                            type="submit"
+                            id="submitbtn"
+                            class="absolute right-2 top-2 bottom-2 bg-primary hover:bg-primary_dark text-[#00363d] font-semibold px-6 rounded transition-colors text-xs uppercase tracking-wider"
+                            >
+                        Search
+                        </button>
+                    </form>
+                </div>
+                <div id="resultsWrapper" class="hidden max-w-3xl mx-auto space-y-6 pb-20">
+                    <div class="bg-surface border border-border rounded-lg overflow-hidden shadow-2xl">
+                        <div class="bg-[#1a243d] px-6 py-3 border-b border-border flex items-center justify-between">
+                            <span class="text-xs font-mono text-primary uppercase tracking-widest">Synthesized Response</span>
+                            <span class="material-symbols-outlined text-text_dim text-sm">auto_awesome</span>
+                        </div>
+                        <div class="p-8">
+                            <div id="resulttext" class="prose prose-invert prose-sm max-w-none text-grey-300 font-sans">No results yet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script>
+            let supa;
+
+            async function bootup() {
+                const response = await fetch("/config");
+                const config = await response.json();
+                supa = supabase.createClient(config.url, config.key);
+                checkSession();
+            }
+            bootup();
+
+            async function loadHistory(){
+                const historyList = document.getElementById("historyList");
+                const {data, error} = await supa
+                .from("search_logs")
+                .select("raw_query")
+                .order("created_at", {ascending:false})
+                .limit(10);
+                if(error){
+                    console.error("failed to fetch:", error.message);
+                    return;
+                }
+
+                if (data && data.length >0){
+                    historyList.innerHTML = "";
+                    data.forEach(item =>{
+                        const div = document.createElement("div");
+                        div.className = "w-full p-2.5 rounded bg-surface/40 border border-border/20 truncate hover:text-primary transition-all cursor-pointer";
+                        div.textContent = item.raw_query;
+                        
+                        div.addEventListener("click",()=>{
+                            document.getElementById("queryInput").value = item.raw_query;
+                        });
+                        historyList.appendChild(div);
+                    });
+                }else{
+                    historyList.innerHTML = `<p class="text-center py-4 text-gray-600 italic">No search history</p>`;
+                }
+
+            }
+
+            async function checkSession(){
+                const{data:{session}} = await supa.auth.getSession();
+                if (!session){
+                    window.location.href = "index.html";
+                }else{
+                    document.getElementById("userEmail").textContent = session.user.email;
+                    window.userToken = session.access_token;
+                    window.userId = session.user.id;
+                    loadHistory();    
+                }
+            }
+
+            document.getElementById("queryForm").addEventListener("submit", async(event)=>{
+                event.preventDefault();
+                const queryText = document.getElementById("queryInput").value;
+                const mode = document.getElementById("modelSelector").value;
+                const submitbtn = document.getElementById("submitbtn");
+                const resultText = document.getElementById("resulttext");
+                const resultsWrapper = document.getElementById("resultsWrapper");
+                
+                submitbtn.textContent = "Processing...";
+                submitbtn.disabled = true;
+                resultText.textContent = "running query...";
+
+                resultsWrapper.classList.remove("hidden");
+
+                try{
+                    const{error: logError} = await supa
+                    .from("search_logs")
+                    .insert([{raw_query: queryText}]);
+
+                    if(logError){
+                        console.error("logging failed:", logError.message);
+                    }else{
+                        loadHistory();
+                    }
+                
+                
+
+                
+                    const fast_url = `/choose?criteria=${encodeURIComponent(queryText)}&mode=${mode}`;
+                    
+                    const response = await fetch(fast_url,{
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${window.userToken}`
+                        }
+                    });
+                    if(!response.ok) throw new Error("connection status: "+response.status);
+                    const data = await response.json();
+                    const rawtxt = data["agent response"] || "error compiling response";
+                    resultText.innerHTML = marked.parse(rawtxt)
+                }catch(error){
+                    resultText.textContent = "Error: "+error.message;
+                }finally{
+                    submitbtn.textContent = "Search";
+                    submitbtn.disabled = false;
+                }
+            });
+            document.getElementById("logoutbtn").addEventListener("click", async()=>{
+                await supa.auth.signOut();
+                window.location.href = "index.html";
+            });
+        </script>
+    </body>
+</html>

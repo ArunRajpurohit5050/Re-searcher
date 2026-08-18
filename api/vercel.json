@@ -1,0 +1,22 @@
+{
+  "builds": [
+    {
+      "src": "main.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "dash.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(choose|logs|get|search|config)", 
+      "dest": "/main.py"
+    },
+    {
+      "src": "/",
+      "dest": "/dash.html"
+    }
+  ]
+}
