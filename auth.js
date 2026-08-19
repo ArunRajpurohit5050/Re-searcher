@@ -1,7 +1,7 @@
 let supa;
 
 async function boothauth() {
-    const response = await fetch("/config");
+    const response = await fetch("/api/config");
     const config = await response.json();
 
     supa = supabase.createClient(config.url, config.key);
