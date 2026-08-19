@@ -84,7 +84,7 @@ gt = Github(auth= auth)
 @app.get("/")
 def index():
     return{"name":"how are you"}
-@app.get("/logs")
+@app.get("/api/login")
 def get_logs(user = Depends(verify_supa)):
     user_id = None
     if isinstance(user,dict):
@@ -92,7 +92,7 @@ def get_logs(user = Depends(verify_supa)):
     response = supabase.table("search_logs").select("*").eq("user_id",user_id).order("created_at",desc=True).execute()
     return {"logs": response.data}
 
-@app.get("/config")
+@app.get("/api/config")
 def get_key():
      return{
           "url": os.environ.get("SUPABASE_URL"),
@@ -101,7 +101,7 @@ def get_key():
     
 
 # main ai search part ---
-@app.get("/choose")
+@app.get("/api/choose")
 def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa)):
     print(mode)
     engine_api = "none"
