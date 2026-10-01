@@ -262,7 +262,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
             all_info.extend(pub_res)
     #internet archive
         if internet == True:
-            result_i = internetarchive.search_items(internet_q, fields=["title","description"],params={'rows':1000})
+            result_i = internetarchive.search_items(internet_q, fields=["title","description"],params={'rows':500})
             inter_res = [p.get("description","no description") for  p in result_i]
             all_info.extend(inter_res)
     #yfinance
@@ -270,7 +270,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
             fina = []
             ticker = yf.Ticker(fin_q)
             inf = ticker.info
-            his = ticker.history(period="1mo", interval = "1h").reset_index()
+            his = ticker.history(period="1mo", interval = "1d").reset_index()
             news = ticker.news
             ans_his = json.loads(his.to_json(orient="records", date_format="iso"))
             fina.append(json.dumps(inf, indent=2))
@@ -353,7 +353,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                     engine_used = "firecrawl"
                     fire_search = fire_client.search(
                                                     query = final_prompt,
-                                                    limit=5,
+                                                    limit=3,
                                                     scrape_options = {
                                                         "formats":["markdown"],
                                                         "onlyMainContent": True
@@ -528,7 +528,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
          tav_res = [item["content"] for item in tavily_resp.get("results",[])]
          fire_search = fire_client.search(
                                                              query = fire_q,
-                                                             limit=5,
+                                                             limit=3,
                                                              scrape_options = {
                                                                  "formats":["markdown"],
                                                                  "onlyMainContent": True
@@ -656,7 +656,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                         all_info.extend(pub_res)
                 #internet archive
                     if internet == True:
-                        result_i = internetarchive.search_items(internet_q, fields=["title","description"],params={'rows':1000})
+                        result_i = internetarchive.search_items(internet_q, fields=["title","description"],params={'rows':600})
                         inter_res = [p.get("description","no description") for  p in result_i]
                         all_info.extend(inter_res)
                 #yfinance
@@ -664,7 +664,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                         fina = []
                         ticker = yf.Ticker(fin_q)
                         inf = ticker.info
-                        his = ticker.history(period="1mo", interval = "1h").reset_index()
+                        his = ticker.history(period="1mo", interval = "90m").reset_index()
                         news = ticker.news
                         ans_his = json.loads(his.to_json(orient="records", date_format="iso"))
                         fina.append(json.dumps(inf, indent=2))
