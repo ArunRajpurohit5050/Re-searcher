@@ -205,10 +205,10 @@
                     });
                     if(!response.ok) throw new Error("connection status: "+response.status);
                     const data = await response.json();
-                    const rawtxt = data["agent response"] || "error compiling response";
+                    const rawtxt = data["agent response"] || "error compiling response(issue might just be gemini server please try once more)";
                     resultText.innerHTML = marked.parse(rawtxt)
                 }catch(error){
-                    resultText.textContent = "Error: "+error.message;
+                    resultText.textContent = "(please try one more time the issue might just be gemini server issue)Error: "+error.message;
                 }finally{
                     submitbtn.textContent = "Search";
                     submitbtn.disabled = false;
