@@ -47,3 +47,5 @@ SUPABASE_ANON_KEY = "supa base anon key"
 supa_admin_key = "supa base admin key"
 
 Note📜- use this command to install libraries "pip install fastapi uvicorn openai duckduckgo-search firecrawl-py tavily-python arxiv wikipedia pymed internetarchive"
+
+>Bro please give me at least 1540 gold for this i want to get a 3d printer if you give less i cannot get my thing i worked for (thanks in advance!).
