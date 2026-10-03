@@ -8,6 +8,20 @@ How Does It Work?
 It used multiple apis such as firecrawl, duckduckgo, tavily, wikipedia, arxiv, and other.
 It get as much info as possible and give a complete synthesised answer with all the info.
 
+Libraries and apis used
+
+1. arxiv
+2. yfinance
+3. github
+4. pubmed
+5. firecrawl
+6. duckduckgo
+7. gemini
+8. wikipedia
+9. internet archive
+10. tavily
+
+
 How to use it?📑
 
 Just visit the website 🌐:"https://re-searcher-steel.vercel.app/" or use the command "uvicorn main:app --reload" and "python -m http.server 3000"
