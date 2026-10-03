@@ -189,16 +189,7 @@
 
                 resultsWrapper.classList.remove("hidden");
 
-                try{
-                    const{error: logError} = await supa
-                    .from("search_logs")
-                    .insert([{raw_query: queryText}]);
-
-                    if(logError){
-                        console.error("logging failed:", logError.message);
-                    }else{
-                        loadHistory();
-                    }
+                loadHistory();
                 
                 
 
