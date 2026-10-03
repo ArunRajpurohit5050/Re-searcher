@@ -377,7 +377,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
         chances = 2
         while chances >= 1:
             try:
-                selecte_model_gem = "gemini-3.6-flash"
+                selecte_model_gem = "gemini-3.5-flash-lite"
                 final_ai = gemini_client.chat.completions.create(
                 model= selecte_model_gem,
                 response_format= {"type":"json_object"},
