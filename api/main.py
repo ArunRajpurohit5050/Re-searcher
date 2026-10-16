@@ -455,7 +455,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                                                 ],
                                                 temperature=0.3
                                             )
-                break
+                
             raw_answer = final_ai.choices[0].message.content.strip()
             if raw_answer: 
                 json_ans = json.loads(raw_answer)
