@@ -377,9 +377,9 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
         chances = 2
         while chances >= 1:
             try:
-                selecte_model_gem = "gemini-3.5-flash-lite"
+                selecte_model_gem_one = "gemini-1.5-flash"
                 final_ai = gemini_client.chat.completions.create(
-                model= selecte_model_gem,
+                model= selecte_model_gem_one,
                 response_format= {"type":"json_object"},
                 messages=[
                     {
@@ -414,16 +414,56 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                                 ],
                                 temperature=0.3
                             )
-                raw_answer = final_ai.choices[0].message.content.strip()
-
-                json_ans = json.loads(raw_answer)
-                statu = json_ans.get("status")
-                final_answer = json_ans.get("answer")
+                
 
             except Exception as e:
                 print("error", e)
+                selecte_model_second = "gpt-4o-mini"
+                final_ai = client.chat.completions.create(
+                                model= selecte_model_second,
+                                response_format= {"type":"json_object"},
+                                messages=[
+                                    {
+                                        "role": "system",
+                                        "content": (
+                                                    "You are a helpful research assistant. Your task is to look at the provided search data, "
+                                                    "make sense of it, eliminate duplicates, resolve contradictions logically, and deliver a "
+                                                    "single, cohesive, well-structured answer to the user's original query."
+                                                    "also read the other api answer which are arxiv, wikipedia, pubmed, internet archive use their information to gain more info and use this info in the final answer making"
+                                                    "Analyze the user query, search for relevant web data using your search tool, and evaluate if the retrieved info is complete, accurate, and sufficient.\n\n"
+                                                    "if the result is duckduckgo was timeout or blocked do not make status to need_deep_scrape ,let it be complete"
+                                                    "You MUST respond strictly in the following JSON format:\n"
+                                                    "{\n"
+                                                        '  "status": "COMPLETE" or "NEED_DEEP_SCRAPE",\n'
+                                                        '  "reason": "Why the data is sufficient or insufficient",\n'
+                                                        '  "target_url": "Specific URL that needs deep scraping (leave null if status is COMPLETE)",\n'
+                                                        '  "answer": "Your comprehensive answer based on search data (leave null if NEED_DEEP_SCRAPE)"\n'
+                                                        "}"
+                                                        )
+                                                    },
+                                                    {
+                                                        "role": "user",
+                                                        "content": (
+                                                            f"original user request:{criteria}\n"
+                                                            f"search prompt used:{final_prompt}\n"
+                                                            f"search engine used:{engine_used}\n"
+                                                            f"raw search context:{final_result}\n"
+                                                            f"other api context:{ans}\n"
+                                                            f"please provide your final response now:"
+                                                        )
+                                                    }
+                                                ],
+                                                temperature=0.3
+                                            )
+                break
+            raw_answer = final_ai.choices[0].message.content.strip()
+            if raw_answer: 
+                json_ans = json.loads(raw_answer)
+                statu = json_ans.get("status")
+                final_answer = json_ans.get("answer")
+            else:
                 final_answer = "there was an issue in generating the answer"
-                break 
+
             if statu == "COMPLETE":
                 print("got the answer")
                 break
@@ -689,40 +729,78 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
          except Exception as e:
               print("there was an error")
               ans = "no api info"
-         selecte_model_gem = "gemini-3.6-flash"
-         final_anser = gemini_client.chat.completions.create(
-              model = selecte_model_gem,
-              messages=[
-                   {
-                        "role":"system",
-                        "content":(
-                             "You are a helpful research assistant. Your task is to look at the provided search data, "
-                             "make sense of it, eliminate duplicates, resolve contradictions logically, and deliver a "
-                             "single, cohesive, well-structured answer to the user's original query."
-                             "and also include most of the info and give the user the most amount of info,"
-                             "also read the other api answer which are arxiv, wikipedia, pubmed, internet archive use their information to gain more info and use this info in the final answer making"
-                             "Analyze the user query, search for relevant web data using your search tool, and evaluate if the retrieved info is complete, accurate, and sufficient.\n\n"
-                             "if the result is duckduckgo was timeout or blocked do not make status to need_deep_scrape ,let it be complete"
-                             "You MUST respond strictly in the following JSON format:\n"
-                             "{\n"
-                             '  "answer": "Your comprehensive answer based on search data"\n'
-                             "}\n"
+         try:
+            selecte_model_gem = "gemini-1.5-pro"
+            final_anser = gemini_client.chat.completions.create(
+                model = selecte_model_gem,
+                messages=[
+                    {
+                            "role":"system",
+                            "content":(
+                                "You are a helpful research assistant. Your task is to look at the provided search data, "
+                                "make sense of it, eliminate duplicates, resolve contradictions logically, and deliver a "
+                                "single, cohesive, well-structured answer to the user's original query."
+                                "and also include most of the info and give the user the most amount of info,"
+                                "also read the other api answer which are arxiv, wikipedia, pubmed, internet archive use their information to gain more info and use this info in the final answer making"
+                                "Analyze the user query, search for relevant web data using your search tool, and evaluate if the retrieved info is complete, accurate, and sufficient.\n\n"
+                                "if the result is duckduckgo was timeout or blocked do not make status to need_deep_scrape ,let it be complete"
+                                "You MUST respond strictly in the following JSON format:\n"
+                                "{\n"
+                                '  "answer": "Your comprehensive answer based on search data"\n'
+                                "}\n"
 
+                            )
+                    },
+                    {
+                            "role":"user",
+                            "content":(
+                                f"raw query: {criteria}\n"
+                                f"scrapped info:{fin_answer}\n"
+                                f"other libraries and api info: {ans}\n"
+                            )
+                    }
+                ]
+            )
+         except Exception as e:
+            print("there was an error: ", e)
+            selected_model_second = "llama-3.3-70b-versatile"
+            final_anser = client.chat.completions.create(
+                            model = selected_model_second,
+                            messages=[
+                                {
+                                        "role":"system",
+                                        "content":(
+                                            "You are a helpful research assistant. Your task is to look at the provided search data, "
+                                            "make sense of it, eliminate duplicates, resolve contradictions logically, and deliver a "
+                                            "single, cohesive, well-structured answer to the user's original query."
+                                            "and also include most of the info and give the user the most amount of info,"
+                                            "also read the other api answer which are arxiv, wikipedia, pubmed, internet archive use their information to gain more info and use this info in the final answer making"
+                                            "Analyze the user query, search for relevant web data using your search tool, and evaluate if the retrieved info is complete, accurate, and sufficient.\n\n"
+                                            "if the result is duckduckgo was timeout or blocked do not make status to need_deep_scrape ,let it be complete"
+                                            "You MUST respond strictly in the following JSON format:\n"
+                                            "{\n"
+                                            '  "answer": "Your comprehensive answer based on search data"\n'
+                                            "}\n"
+            
+                                        )
+                                },
+                                {
+                                        "role":"user",
+                                        "content":(
+                                            f"raw query: {criteria}\n"
+                                            f"scrapped info:{fin_answer}\n"
+                                            f"other libraries and api info: {ans}\n"
+                                        )
+                                }
+                            ]
                         )
-                   },
-                   {
-                        "role":"user",
-                        "content":(
-                             f"raw query: {criteria}\n"
-                             f"scrapped info:{fin_answer}\n"
-                             f"other libraries and api info: {ans}\n"
-                        )
-                   }
-              ]
-         )
+            
          ai_don = final_anser.choices[0].message.content.strip()
-         json_ai = json.loads(ai_don)   
-         final_answer = json_ai.get("answer")
+         if ai_don:   
+            json_ai = json.loads(ai_don)   
+            final_answer = json_ai.get("answer")
+         else:
+            final_answer = "there was an issue in generating the answer"
          print("hi", ans)   
          return{
               "agent response": final_answer
