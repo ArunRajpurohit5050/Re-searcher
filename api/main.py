@@ -377,7 +377,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
         chances = 2
         while chances >= 1:
             try:
-                selecte_model_gem_one = "gemini-1.5-flash"
+                selecte_model_gem_one = "gemini-3.5-flash-lite"
                 final_ai = gemini_client.chat.completions.create(
                 model= selecte_model_gem_one,
                 response_format= {"type":"json_object"},
@@ -418,7 +418,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
 
             except Exception as e:
                 print("error", e)
-                selecte_model_second = "gpt-4o-mini"
+                selecte_model_second = "openai/gpt-oss-20b"
                 final_ai = client.chat.completions.create(
                                 model= selecte_model_second,
                                 response_format= {"type":"json_object"},
@@ -730,7 +730,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
               print("there was an error")
               ans = "no api info"
          try:
-            selecte_model_gem = "gemini-1.5-pro"
+            selecte_model_gem = "gemini-3.6-flash"
             final_anser = gemini_client.chat.completions.create(
                 model = selecte_model_gem,
                 messages=[
@@ -763,7 +763,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
             )
          except Exception as e:
             print("there was an error: ", e)
-            selected_model_second = "llama-3.3-70b-versatile"
+            selected_model_second = "openai/gpt-oss-120b"
             final_anser = client.chat.completions.create(
                             model = selected_model_second,
                             messages=[
