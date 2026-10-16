@@ -730,7 +730,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
               print("there was an error")
               ans = "no api info"
          try:
-            selecte_model_gem = "gemini-3.6-flash"
+            selecte_model_gem = "gemini-3.8-flash"
             final_anser = gemini_client.chat.completions.create(
                 model = selecte_model_gem,
                 messages=[
@@ -763,8 +763,8 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
             )
          except Exception as e:
             print("there was an error: ", e)
-            selected_model_second = "openai/gpt-oss-120b"
-            final_anser = client.chat.completions.create(
+            selected_model_second = "gemini-3.6-flash"
+            final_anser = gemini_client.chat.completions.create(
                             model = selected_model_second,
                             messages=[
                                 {
