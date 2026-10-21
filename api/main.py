@@ -206,7 +206,18 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                 ] 
             )
             raw_api = other_api.choices[0].message.content.strip()
-            json_api = json.loads(raw_api)
+            try:
+                json_api = json.loads(raw_api)
+            except Exception as e:
+                print("error in json", e)
+                json_api = {
+                    "arxiv_use": False, "arxiv_query": None,
+                    "wiki_use": False, "wiki_query": None,
+                    "pub_use": False, "pub_query": None,
+                    "internet_use": False, "internet_query": None,
+                    "fin_use": False, "fin_query": None,
+                    "github_use": False, "github_query": None
+                }
         #api t/f
             arxiv_t = json_api.get("arxiv_use")
             wiki = json_api.get("wiki_use")
@@ -296,6 +307,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
         # query generator part ---
             ddgs_taivly_resp = client.chat.completions.create(
                     model= selecte_model,
+                    response_format={"type":"json_object"},
                     messages=[
                         {
                             "role": "system" ,
@@ -330,7 +342,14 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                     ]
                 )
             raw_json = ddgs_taivly_resp.choices[0].message.content.strip()
-            prcess = json.loads(raw_json)
+            try:
+                prcess = json.loads(raw_json)
+            except Exception as e:
+                print("error in json", e)
+                prcess = {
+                    "selected_engine": "DuckDuckGo",
+                    "optimized_query": criteria
+                }
             final_prompt = prcess.get("optimized_query",criteria)
 
         # api search part ---
@@ -458,8 +477,17 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                                                 )
                     
                 raw_answer = final_ai.choices[0].message.content.strip()
-                if raw_answer: 
-                    json_ans = json.loads(raw_answer)
+                if raw_answer:
+                    try: 
+                        json_ans = json.loads(raw_answer)
+                    except Exception as e:
+                        print("error in json", e)
+                        json_ans = {
+                            "status": "COMPLETE",
+                            "reason": "Error in parsing JSON from AI response",
+                            "target_url": None,
+                            "answer": "there was an issue in generating the answer"
+                        }
                     statu = json_ans.get("status")
                     final_answer = json_ans.get("answer")
                 else:
@@ -551,7 +579,15 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
             )
 
             json_max = ai_prom.choices[0].message.content.strip()
-            load_max = json.loads(json_max)
+            try:
+                load_max = json.loads(json_max)
+            except Exception as e:
+                print("error in json", e)
+                load_max = {
+                    "duckduckgo_query": criteria,
+                    "tavily_query": criteria,
+                    "firecrawl_query": criteria
+                }
             duck_q = load_max.get("duckduckgo_query")
             tavily_q = load_max.get("tavily_query")
             fire_q = load_max.get("firecrawl_query")
@@ -640,7 +676,18 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                         )
             try:
                         raw_api = other_api.choices[0].message.content.strip()
-                        json_api = json.loads(raw_api)
+                        try:
+                            json_api = json.loads(raw_api)
+                        except Exception as e:
+                            print("error in json", e)
+                            json_api = {
+                                "arxiv_use": False, "arxiv_query": None,
+                                "wiki_use": False, "wiki_query": None,
+                                "pub_use": False, "pub_query": None,
+                                "internet_use": False, "internet_query": None,
+                                "fin_use": False, "fin_query": None,
+                                "github_use": False, "github_query": None
+                            }
                     #api t/f
                         arxiv_t = json_api.get("arxiv_use")
                         wiki = json_api.get("wiki_use")
@@ -734,6 +781,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                 selecte_model_gem = "gemini-3.8-flash"
                 final_anser = gemini_client.chat.completions.create(
                     model = selecte_model_gem,
+                    response_format={"type":"json_object"},
                     messages=[
                         {
                                 "role":"system",
@@ -767,6 +815,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                 selected_model_second = "gemini-3.6-flash"
                 final_anser = gemini_client.chat.completions.create(
                                 model = selected_model_second,
+                                response_format={"type":"json_object"},
                                 messages=[
                                     {
                                             "role":"system",
@@ -797,8 +846,14 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                             )
                 
             ai_don = final_anser.choices[0].message.content.strip()
-            if ai_don:   
-                json_ai = json.loads(ai_don)   
+            if ai_don:
+                try:   
+                    json_ai = json.loads(ai_don)
+                except Exception as e:
+                    print("error in json", e)
+                    json_ai = {
+                        "answer": "there was an issue in generating the answer"
+                    }   
                 final_answer = json_ai.get("answer")
             else:
                 final_answer = "there was an issue in generating the answer"
