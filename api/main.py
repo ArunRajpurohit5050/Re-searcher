@@ -810,7 +810,8 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
          print("there was an error in the main function", e)
          return{
               "engine used" : "error in the main function",
+
               "prompt" : criteria,
-              "search result" : "error in the main function",
-              "agent response" : "error in the main function"
+              "search result" : f"error in the main function{e}",
+              "agent response" : f"error in the main function{e}"
          }     
