@@ -55,15 +55,13 @@ def verify_supa(credentials: HTTPAuthorizationCredentials = Depends(security) ):
 client = OpenAI(
     base_url="https://api.groq.com/openai/v1",
     api_key= os.environ.get("ai_key"),
-    max_retries=0,
-    timeout=45.0
+    max_retries=0
 )
 
 gemini_client = OpenAI(
     base_url= "https://generativelanguage.googleapis.com/v1beta/openai/",
     api_key= os.environ.get("gemini_key"),
-    max_retries=0,
-    timeout=45.0
+    max_retries=0
 )
 
 tavily_client = TavilyClient(api_key=os.environ.get("tavily_key"))
