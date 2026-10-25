@@ -68,8 +68,8 @@ fire_client = FirecrawlApp(api_key=os.environ.get("fire_key"))
 
 xiv_client = arxiv.Client(
       page_size= 10,
-      delay_seconds= 3.0,
-      num_retries= 3
+      delay_seconds= 0,
+      num_retries= 2
 )
 
 wikipedia.set_user_agent("RE-search/v1 (larry.reddit.reads@gmail.com)")
@@ -595,12 +595,7 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
             print(tavily_q)
             print(fire_q)
             final_ans =[]
-            try:
-                with DDGS() as ddgs:
-                    respond = list(ddgs.text(duck_q,max_results=5))
-                    ddgs_res = [item["body"] for item in respond]
-            except Exception as e :
-                ddgs_res="error in ddgs"
+            
             tavily_resp = tavily_client.search(query=tavily_q, max_results=5)
             tav_res = [item["content"] for item in tavily_resp.get("results",[])]
             fire_search = fire_client.search(
@@ -612,7 +607,6 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                                                                 }
                                                             )
             fire_res = [res.markdown for res in fire_search.web if getattr(res, "markdown", None)is not None]
-            final_ans.extend(ddgs_res)
             final_ans.extend(tav_res)
             final_ans.extend(fire_res)
             fin_answer= "\n\n--- source break ---\n\n".join(final_ans)
