@@ -281,16 +281,20 @@ def opt_search(criteria:str,mode: str= "norm",user: dict = Depends(verify_supa))
                 all_info.extend(inter_res)
         #yfinance
             if fin == True:
-                fina = []
-                ticker = yf.Ticker(fin_q)
-                inf = ticker.info
-                his = ticker.history(period="1mo", interval = "1d").reset_index()
-                news = ticker.news
-                ans_his = json.loads(his.to_json(orient="records", date_format="iso"))
-                fina.append(json.dumps(inf, indent=2))
-                fina.append(json.dumps(news, indent=2))
-                fina.append(json.dumps(ans_his, indent=2))
-                fin_res = "\n\n--- info type break ---\n\n".join(fina)
+                try:
+                    fina = []
+                    ticker = yf.Ticker(fin_q)
+                    inf = ticker.info
+                    his = ticker.history(period="1mo", interval = "1d").reset_index()
+                    news = ticker.news
+                    ans_his = json.loads(his.to_json(orient="records", date_format="iso"))
+                    fina.append(json.dumps(inf, indent=2))
+                    fina.append(json.dumps(news, indent=2))
+                    fina.append(json.dumps(ans_his, indent=2))
+                    fin_res = "\n\n--- info type break ---\n\n".join(fina)
+                    
+                except Exception as e:
+                    fin_res= "could not get finace data use other way to get data yourself"
                 all_info.append(fin_res)
         #github
             if git == True:
