@@ -135,6 +135,10 @@
 
             async function loadHistory(){
                 const historyList = document.getElementById("historyList");
+                if(window.isTrial){
+                    historyList.innerHTML = `<p class="text-center py-4 text-text_dim">Please <a href="index.html" class="text-primary underline hover:text-primary_dark">sign in</a> to view search logs.</p>`;
+                    return;
+                }
                 const {data, error} = await supa
                 .from("search_logs")
                 .select("raw_query")
@@ -168,7 +172,11 @@
                 if (!session){
                     window.location.href = "index.html";
                 }else{
-                    document.getElementById("userEmail").textContent = session.user.email;
+                    window.isTrial = session.user.is_anonymous || session.user.user_metadata?.account_type === "trial";
+                    const displayName = window.isTrial
+                        ? '${session.user.user_metadata?.name || "Guest"} (Trial)'
+                        : session.user.email;
+                    document.getElementById("userEmail").textContent = displayName;
                     window.userToken = session.access_token;
                     window.userId = session.user.id;
                     loadHistory();    
