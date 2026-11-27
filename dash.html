@@ -172,9 +172,9 @@
                 if (!session){
                     window.location.href = "index.html";
                 }else{
-                    window.isTrial = session.user.is_anonymous || "trial";
+                    window.isTrial = session.user.is_anonymous || session.user.user_metadata?.account_type === "trial";
                     const displayName = window.isTrial
-                        ? '${session.user.user_metadata?.name || "Guest"} (Trial)'
+                        ? (session.user.user_metadata?.name || "Guest") + "(Trial)"
                         : session.user.email;
                     document.getElementById("userEmail").textContent = displayName;
                     window.userToken = session.access_token;
