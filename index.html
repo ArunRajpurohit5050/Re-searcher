@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <title>Login Page</title>
 </head>
 
@@ -16,9 +17,12 @@
             <button type="submit">Login with email</button>
         </form>
 
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAGVQT65mUGBU-4tR" data-callback="onTurnstileSuccess"></div>
+
         <div class="divider">or</div>
         <button id="googlebtn" class="oauth-google">Continue with google</button>
         <button id="githubbtn" class="oauth-github">Continue with github</button>
+        <button id="trial-btn" type="button" class="trial-btn">Continue as Trial Account</button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/auth.js"></script>
